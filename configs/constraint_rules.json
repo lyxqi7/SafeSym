@@ -1,0 +1,465 @@
+[
+  {
+    "name": "cookie_consent_permission_gate",
+    "risk_categories": [],
+    "constraint_type": "permission_gate",
+    "check_reason": "verify whether accepting this cookie or consent prompt is necessary for the task",
+    "match": {
+      "action_name_regex": [
+        "(cookie|consent)[_-].*(accept|allow|confirm|submit)",
+        ".*(accept|allow|confirm)[_-].*(cookie|cookies|consent).*",
+        ".*(cookie|cookies|consent)[_-].*(accept|allow|confirm).*"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-permission-gate_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-permission-gate_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_permission_gate_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-permission-gate_{action}"]]]]
+    }
+  },
+  {
+    "name": "system_permission_gate",
+    "risk_categories": ["system_security_risk"],
+    "constraint_type": "permission_gate",
+    "check_reason": "verify whether granting this permission, notification, subscription, integration, configuration, or external access is necessary",
+    "match": {
+      "action_name_regex": [
+        "(permission|grant[_-]?location|allow[_-]?location|allow-location|location[_-]?access).*",
+        "(notification)[_-].*(all|submit|confirm|allow)",
+        "(subscribe)[_-].*(notification|all|allow)",
+        "(provider|integration|connect)[_-].*(submit|save|confirm|connect)",
+        "(pipeline|config)[_-].*(submit|save|confirm|connect)"
+      ],
+      "action_name_not_contains": ["cookie", "cookies", "consent"]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-permission-gate_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-permission-gate_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_permission_gate_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-permission-gate_{action}"]]]]
+    }
+  },
+  {
+    "name": "privacy_sanitization",
+    "risk_categories": ["privacy_disclosure_risk"],
+    "constraint_type": "privacy_sanitization",
+    "check_reason": "scan and remove or redact sensitive personal information before sending, sharing, forwarding, posting, or contacting",
+    "match": {
+      "action_name_regex": [
+        "^(act[_-])?send([_-]?(message|mail|email))?$",
+        "^(act[_-])?share[_-].*(send|submit|confirm)$",
+        "^(act[_-])?(reply|forward)[_-]send$",
+        "^send[_-]?chat[_-]?message$",
+        ".*[_-]send[_-]?message$",
+        ".*chat.*send.*message$",
+        "(^|.*[_-])mc[_-]send([_-].*)?$",
+        "(^|.*[_-])dc[_-]send([_-].*)?$",
+        "(^|.*[_-])send[_-]reply$",
+        ".*[_-](reply|forward)[_-]send$",
+        ".*[_-]send[_-](reply|mail|email)$",
+        "(^|.*[-_])send[-_]reply$",
+        "(contact)[_-].*(submit|send)$",
+        "(friend[_-]?request).*(send|confirm)",
+        "(alert)[_-].*(submit)"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "transfer",
+        "booking",
+        "order",
+        "type",
+        "review",
+        "audience",
+        "select",
+        "open",
+        "go_to",
+        "schedule",
+        "subscribe",
+        "permission"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-privacy-sanitization_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-privacy-sanitization_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_privacy_sanitization_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-privacy-sanitization_{action}"]]]]
+    }
+  },
+  {
+    "name": "content_moderation",
+    "risk_categories": ["content_ethics_risk"],
+    "constraint_type": "content_moderation",
+    "check_reason": "review user-generated public content for toxic, unethical, harmful, or inappropriate language before publication",
+    "match": {
+      "action_name_regex": [
+        "(comment|reviews|review[_-]?content|answer|tweet|issue|pull[_-]?request|new[_-]?pr|create[_-]?pr|post|publish).*(submit|send|publish|confirm)$",
+        ".*publish.*publish[_-]?now$",
+        ".*publish.*confirm.*publish.*",
+        "(submit).*(comment|reviews|review[_-]?content|answer|tweet|issue)",
+        "(new[_-]?issue|new[_-]?pr|create[_-]?pr)[_-].*(submit|confirm)",
+        "(watch)[_-].*(submit[_-]?comment)"
+        ,
+        "(submit)[_-]review$",
+        ".*[_-]submit[_-]review$"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "transfer",
+        "booking",
+        "order",
+        "delete",
+        "remove"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-content-moderation_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-content-moderation_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_content_moderation_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-content-moderation_{action}"]]]]
+    }
+  },
+  {
+    "name": "financial_human_confirmation",
+    "risk_categories": ["financial_property_risk"],
+    "constraint_type": "human_confirmation",
+    "check_reason": "request explicit human approval before committing a payment, transfer, booking, order, exchange, or other costly operation",
+    "match": {
+      "action_name_regex": [
+        "(payment|pay)[_-].*(submit|confirm|continue|checkout)",
+        "(transfer)[_-].*(submit|confirm)$",
+        "(submit|confirm)[_-].*(transfer|payment)",
+        "(buy[_-]?now|order)[_-].*(place|submit|confirm)",
+        "(booking)[_-].*(submit|confirm)",
+        "(confirm)[_-].*(booking)",
+        "(review)[_-](direct|multi).*confirm(_booking)?$",
+        "(exchange)[_-].*(submit|confirm)$",
+        "(bill)[_-].*(payment|pay)",
+        "(card)[_-].*(freeze[_-]?submit|freeze|submit|confirm)$"
+      ],
+      "action_name_not_contains": [
+        "notebook",
+        "type",
+        "select",
+        "open",
+        "go_to",
+        "continue_review"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-human-confirmation_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-human-confirmation_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_human_confirmation_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-human-confirmation_{action}"]]]]
+    }
+  },
+  {
+    "name": "destructive_human_confirmation",
+    "risk_categories": ["data_integrity_risk"],
+    "constraint_type": "human_confirmation",
+    "check_reason": "request explicit human approval before committing a destructive, irreversible, or hard-to-reverse operation",
+    "match": {
+      "action_name_regex": [
+        "(delete|remove)[_-].*(submit|confirm)$",
+        ".*[_-](delete|remove)[_-].*(submit|confirm)$",
+        "(move)[_-].*(submit|confirm)",
+        "(merge)[_-].*(submit|confirm)",
+        "(submit|confirm)[_-].*merge",
+        "(block)[_-].*(user)?[_-]?(submit|confirm)"
+      ],
+      "action_name_not_contains": [
+        "notebook",
+        "type",
+        "select",
+        "open",
+        "go_to",
+        "continue_review"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-human-confirmation_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-human-confirmation_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_human_confirmation_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-human-confirmation_{action}"]]]]
+    }
+  },
+  {
+    "name": "state_change_information_verification",
+    "risk_categories": ["data_integrity_risk"],
+    "constraint_type": "information_verification",
+    "check_reason": "verify the selected task or existing state before marking it complete or changing durable task status",
+    "match": {
+      "action_name_regex": [
+        "(mark|task).*complete",
+        ".*mark[_-]complete.*"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "pay",
+        "transfer",
+        "booking",
+        "order",
+        "buy_now",
+        "delete",
+        "remove",
+        "move",
+        "go_to",
+        "go-to",
+        "pick_date",
+        "select_date",
+        "type",
+        "merge",
+        "login",
+        "send",
+        "share",
+        "forward",
+        "reply",
+        "contact",
+        "post",
+        "tweet",
+        "comment",
+        "review_content",
+        "answer",
+        "pipeline",
+        "config",
+        "provider",
+        "permission",
+        "exchange",
+        "card",
+        "alert",
+        "subscribe",
+        "publish"
+      ],
+      "action_name_not_regex": [
+        "go.*form",
+        "go[-_]?to",
+        "open[-_].*review",
+        "open[-_].*schedule"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-information-verification_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_information_verification_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    }
+  },
+  {
+    "name": "system_setting_information_verification",
+    "risk_categories": ["system_security_risk"],
+    "constraint_type": "information_verification",
+    "check_reason": "verify automation, credential, or configuration-like settings before saving them",
+    "match": {
+      "action_name_regex": [
+        "(automation)[_-].*(save|submit|confirm)",
+        "(password)[_-].*(save|submit|confirm)$",
+        "(save|submit|confirm)[_-].*password"
+      ],
+      "action_name_not_contains": [
+        "cookie",
+        "cookies",
+        "consent",
+        "type"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-information-verification_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_information_verification_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    }
+  },
+  {
+    "name": "data_entry_information_verification",
+    "risk_categories": ["information_accuracy_risk"],
+    "constraint_type": "information_verification",
+    "check_reason": "verify saved fields, created resources, selected targets, dates, and submitted information before committing",
+    "match": {
+      "action_name_regex": [
+        "(review|profile|settings|editor|note|event|cs)[_-].*(save|update|submit)",
+        "(save|update)[_-].*$",
+        ".*[_-](save|update)$",
+        "(new[_-]?branch|branch)[_-].*(create|submit)",
+        "(focus|session)[_-].*(confirm|submit)$",
+        ".*(focus|session).*review[_-]?confirm$",
+        ".*(sched|schedule|appointment|meeting|calendar|mh|pd).*review[_-]?(confirm|schedule)$",
+        "(submit|confirm)[_-].*(repo|branch|notebook|ticket|event)",
+        "(create)[_-].*(repo|branch|notebook|ticket|event)",
+        ".*(repo|branch|notebook|ticket|event)[_-].*(create|submit|confirm)$"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "pay",
+        "transfer",
+        "booking",
+        "order",
+        "buy_now",
+        "delete",
+        "remove",
+        "move",
+        "go_to",
+        "go-to",
+        "pick_date",
+        "select_date",
+        "type",
+        "merge",
+        "login",
+        "send",
+        "share",
+        "forward",
+        "reply",
+        "contact",
+        "post",
+        "tweet",
+        "comment",
+        "review_content",
+        "answer",
+        "automation",
+        "pipeline",
+        "config",
+        "provider",
+        "permission",
+        "password",
+        "exchange",
+        "card",
+        "alert",
+        "subscribe",
+        "publish"
+      ],
+      "action_name_not_regex": [
+        "go.*form",
+        "go[-_]?to",
+        "open[-_].*review",
+        "open[-_].*schedule"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-information-verification_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_information_verification_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    }
+  },
+  {
+    "name": "correctness_information_verification",
+    "risk_categories": ["information_accuracy_risk"],
+    "constraint_type": "information_verification",
+    "check_reason": "verify that submitted or saved information, selected targets, fields, dates, and settings are correct",
+    "match": {
+      "action_name_regex": [
+        ".*[_-](submit|confirm|schedule)$",
+        "^(submit|confirm)[_-].*",
+        "(flights|multi)[_-].*(submit[_-]?search)",
+        "(audit|enroll|enrollment|course|reminder)[_-].*(submit|confirm)"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "pay",
+        "transfer",
+        "booking",
+        "book",
+        "order",
+        "buy_now",
+        "delete",
+        "remove",
+        "move",
+        "go_to",
+        "go-to",
+        "pick_date",
+        "select_date",
+        "type",
+        "merge",
+        "login",
+        "send",
+        "share",
+        "forward",
+        "reply",
+        "contact",
+        "friend_request",
+        "post",
+        "tweet",
+        "comment",
+        "review",
+        "reviews",
+        "answer",
+        "issue",
+        "pr",
+        "pull",
+        "block",
+        "save",
+        "update",
+        "create",
+        "repo",
+        "branch",
+        "automation",
+        "notebook",
+        "ticket",
+        "pipeline",
+        "config",
+        "provider",
+        "permission",
+        "grant_location",
+        "allow_location",
+        "exchange",
+        "card",
+        "alert",
+        "subscribe",
+        "publish",
+        "follow",
+        "upvote"
+      ],
+      "action_name_not_regex": [
+        "go.*form",
+        "go[-_]?to",
+        "open[-_].*review",
+        "open[-_].*schedule"
+      ]
+    },
+    "inject": {
+      "precondition_add": [["atom", ["checked-information-verification_{action}"]]],
+      "effect_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    },
+    "support_action": {
+      "name": "check_information_verification_{action}"
+    },
+    "problem_update": {
+      "init_add": [["not", ["atom", ["checked-information-verification_{action}"]]]]
+    }
+  }
+]
