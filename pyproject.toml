@@ -1,0 +1,21 @@
+[project]
+name = "safesym"
+version = "0.1.0"
+description = "SafeSym: safety-constrained symbolic world models and planning for GUI agents."
+requires-python = ">=3.10"
+dependencies = [
+  "openai",
+  "pillow",
+]
+
+[project.optional-dependencies]
+webarena = [
+  "playwright",
+]
+dev = [
+  "pytest",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

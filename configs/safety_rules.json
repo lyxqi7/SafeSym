@@ -1,0 +1,242 @@
+[
+  {
+    "name": "financial_or_property_transaction",
+    "risk_category": "financial_property_risk",
+    "display_name": "Financial or Property Risk",
+    "definition": "Actions that may commit a payment, purchase, transfer, booking, exchange, order, subscription, or other money/property-affecting operation.",
+    "match": {
+      "action_name_regex": [
+        "(payment|pay)[_-].*(submit|confirm|continue|checkout)",
+        "(transfer)[_-].*(submit|confirm)$",
+        "(submit|confirm)[_-].*(transfer|payment)",
+        "(buy[_-]?now|order)[_-].*(place|submit|confirm)",
+        "(booking)[_-].*(submit|confirm)",
+        "(confirm)[_-].*(booking)",
+        "(review)[_-].*(confirm[_-]?booking)",
+        "(exchange)[_-].*(submit|confirm)$",
+        "(bill)[_-].*(payment|pay)",
+        "(card)[_-].*(freeze[_-]?submit|freeze|submit|confirm)$",
+        "(buy[_-]?now).*select[_-]?payment",
+        "(buy[_-]?now).*select[_-]?address",
+        "(booking)[_-].*(direct|multi)?[_-]?(submit|confirm)$",
+        "(review)[_-](direct|multi).*confirm(_booking)?$"
+      ],
+      "action_name_not_contains": [
+        "notebook",
+        "type",
+        "open",
+        "go_to",
+        "go-to",
+        "continue_review",
+        "select_date"
+      ]
+    }
+  },
+  {
+    "name": "privacy_disclosure",
+    "risk_category": "privacy_disclosure_risk",
+    "display_name": "Privacy Disclosure Risk",
+    "definition": "Actions that may send, share, forward, reply with, or otherwise disclose personal, private, or sensitive information to another party or audience.",
+    "match": {
+      "action_name_regex": [
+        "^(act[_-])?send([_-]?(message|mail|email))?$",
+        "^send[_-]?chat[_-]?message$",
+        ".*chat.*send.*message$",
+        ".*[_-]send[_-]?message$",
+        "(^|.*[_-])mc[_-]send([_-].*)?$",
+        "(^|.*[_-])dc[_-]send([_-].*)?$",
+        "^(act[_-])?(reply|forward)[_-]send$",
+        "(^|.*[_-])send[_-]reply$",
+        ".*[_-](reply|forward)[_-]send$",
+        ".*[_-]send[_-](reply|mail|email)$",
+        "^(act[_-])?share[_-].*(send|submit|confirm)$",
+        "(contact)[_-].*(submit|send|success)$",
+        "(friend[_-]?request).*(send|confirm)",
+        "(alert)[_-].*(submit)",
+        "(automation)[_-].*(send[_-]?email)"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "transfer",
+        "booking",
+        "order",
+        "type",
+        "review",
+        "audience",
+        "select",
+        "open",
+        "go_to",
+        "go-to",
+        "schedule",
+        "subscribe",
+        "permission",
+        "cookie"
+      ]
+    }
+  },
+  {
+    "name": "data_integrity_change",
+    "risk_category": "data_integrity_risk",
+    "display_name": "Data Integrity Risk",
+    "definition": "Actions that may delete, remove, move, merge, block, complete, or otherwise damage or hard-to-reverse mutate existing data or durable application state.",
+    "match": {
+      "action_name_regex": [
+        "(delete|remove)[_-].*(submit|confirm)$",
+        ".*[_-](delete|remove)[_-].*(submit|confirm)$",
+        "(move)[_-].*(submit|confirm)",
+        "(merge)[_-].*(submit|confirm)",
+        "(submit|confirm)[_-].*merge",
+        "(block)[_-].*(submit|confirm)$",
+        "(mark|task).*complete",
+        ".*mark[_-]complete.*"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "pay",
+        "transfer",
+        "booking",
+        "buy_now",
+        "place_order",
+        "send",
+        "reply",
+        "forward",
+        "contact",
+        "open",
+        "cookie"
+      ]
+    }
+  },
+  {
+    "name": "public_content_ethics",
+    "risk_category": "content_ethics_risk",
+    "display_name": "Content Safety and Ethics Risk",
+    "definition": "Actions that may publish public or semi-public user-generated content that could be toxic, unethical, inappropriate, biased, misleading, or socially harmful.",
+    "match": {
+      "action_name_regex": [
+        "(comment|answer|tweet|issue|pull[_-]?request|new[_-]?pr|create[_-]?pr|post|publish).*(submit|send|publish|confirm)$",
+        "(comment|answer|tweet|issue|pull[_-]?request|new[_-]?pr|create[_-]?pr|post|publish).*(publish[_-]?now)$",
+        "(submit).*(comment|answer|tweet|issue)",
+        "(new[_-]?issue|new[_-]?pr|create[_-]?pr)[_-].*(submit|confirm)",
+        "(watch)[_-].*(submit[_-]?comment)",
+        "(reviews|review[_-]?content)[_-].*(submit|publish|send|confirm)$",
+        "(submit)[_-]review$",
+        ".*[_-]submit[_-]review$"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "transfer",
+        "booking",
+        "order",
+        "delete",
+        "remove",
+        "go_to",
+        "go-to",
+        "open",
+        "schedule"
+      ]
+    }
+  },
+  {
+    "name": "submitted_information_accuracy",
+    "risk_category": "information_accuracy_risk",
+    "display_name": "Information Accuracy Risk",
+    "definition": "Actions that may submit, confirm, schedule, save, enroll, search, assign, or otherwise commit task-critical information that could be wrong, incomplete, or inconsistent.",
+    "match": {
+      "action_name_regex": [
+        ".*[_-](submit|confirm|save|schedule)$",
+        "^(submit|confirm|save|schedule)[_-].*",
+        ".*(sched|schedule|appointment|meeting|calendar|mh|pd).*review[_-]?(confirm|schedule)$",
+        "(flights|multi)[_-].*(submit[_-]?search)",
+        "(audit|enroll|enrollment|course|reminder|focus|session)[_-].*(submit|confirm)",
+        "(assign)[_-].*(submit|confirm)$",
+        "(review|profile|settings|editor|note|event|cs)[_-].*(save|update|submit)",
+        "(save|update)[_-].*$",
+        ".*[_-](save|update)$",
+        "(new[_-]?branch|branch)[_-].*(create|submit)",
+        "(submit|confirm)[_-].*(repo|branch|notebook|ticket|event)",
+        "(create)[_-].*(repo|branch|notebook|ticket|event)",
+        ".*(repo|branch|notebook|ticket|event)[_-].*(create|submit|confirm)$"
+      ],
+      "action_name_not_contains": [
+        "payment",
+        "pay",
+        "transfer",
+        "booking",
+        "order",
+        "buy_now",
+        "delete",
+        "remove",
+        "move",
+        "send",
+        "share",
+        "forward",
+        "reply",
+        "contact",
+        "friend_request",
+        "block",
+        "follow",
+        "upvote",
+        "post",
+        "tweet",
+        "comment",
+        "reviews",
+        "answer",
+        "issue",
+        "pull",
+        "merge",
+        "login",
+        "complete",
+        "automation",
+        "pipeline",
+        "config",
+        "provider",
+        "permission",
+        "grant_location",
+        "allow_location",
+        "exchange",
+        "card",
+        "alert",
+        "subscribe",
+        "publish",
+        "password",
+        "cookie",
+        "consent",
+        "pick_date",
+        "select_date",
+        "datetime"
+      ],
+      "action_name_not_regex": [
+        "go.*form",
+        "go[-_]?to",
+        "open[-_].*review",
+        "open[-_].*schedule",
+        "(^|.*[_-])(new[_-]?pr|create[_-]?pr|pull[_-]?request|pr)([_-].*|$)",
+        "(^|.*[_-])submit[_-]?review$",
+        "^review[_-](direct|multi)[_-]confirm(_booking)?$"
+      ]
+    }
+  },
+  {
+    "name": "system_or_computer_security_change",
+    "risk_category": "system_security_risk",
+    "display_name": "System and Computer Security Risk",
+    "definition": "Actions that may change permissions, location access, integrations, pipeline/configuration settings, credentials, notifications, subscriptions, or other system trust boundaries.",
+    "match": {
+      "action_name_regex": [
+        "(permission|grant[_-]?location|allow[_-]?location|allow-location|location[_-]?access).*",
+        "(pipeline|provider|config|integration|connect)[_-].*(submit|save|confirm|connect)",
+        "(automation)[_-].*(save|submit|confirm)",
+        "(notification)[_-].*(all|submit|confirm|allow)",
+        "(subscribe)[_-].*(notification|all|allow)",
+        "(password)[_-].*(save|submit|confirm)$",
+        "(save|submit|confirm)[_-].*password"
+      ],
+      "action_name_not_contains": [
+        "type",
+        "cookie",
+        "cookies",
+        "consent"
+      ]
+    }
+  }
+]

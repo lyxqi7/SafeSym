@@ -1,0 +1,22 @@
+{
+  "models": [
+    {
+      "name": "gpt-5.4-mini",
+      "model": "gpt-5.4-mini",
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "OPENAI_BASE_URL"
+    },
+    {
+      "name": "deepseek-chat",
+      "model": "deepseek-chat",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com"
+    },
+    {
+      "name": "qwen-vl",
+      "model": "qwen-vl-plus",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    }
+  ]
+}
